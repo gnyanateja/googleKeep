@@ -1,0 +1,392 @@
+<mat-toolbar color="primary">
+
+    <button mat-button  (click)="drawer.toggle()"><mat-icon>menu</mat-icon></button>
+
+    <img src="assets/keep.png">
+    <h2 id="title">Google Keep</h2>
+
+    <!-- This fills the remaining space of the current row -->
+
+        <input class="search"  type="search" matInput placeholder="Search">
+
+
+
+    <button id="log" mat-button  (click)="logout()">Logout</button>
+
+</mat-toolbar>
+<mat-drawer-container class="example-container">
+    <mat-drawer #drawer class="example-sidenav" mode="side">
+        <button mat-button [ngStyle]="{'color': turn==0? 'blue' : 'black'}" (click)="turner(0)" class="button">
+          <mat-icon class="icon">event_note</mat-icon> Notes</button>
+        <hr>
+        <span>Labels</span>
+        <br>
+        <button mat-button [ngStyle]="{'color': turn==4? 'blue' : 'black'}" (click)="turner(4)" class="button">
+            <mat-icon class="icon">label</mat-icon> </button>
+          <hr>
+        <button mat-button [ngStyle]="{'color': turn==1? 'blue' : 'black'}" (click)="turner(1)" class="button">
+          <mat-icon class="icon">archive</mat-icon> Archive</button>
+        <hr>
+        <button mat-button [ngStyle]="{'color': turn==2? 'blue' : 'black'}" (click)="turner(2)" class="button">
+          <mat-icon class="icon">restore_from_trash</mat-icon> Trash</button>
+
+    </mat-drawer>
+
+    <div class="example-sidenav-content">
+
+        <div class="notes" *ngIf="turn==0">
+            <div id="name">
+                <span>Hi {{username}}, Google Keep welcomes you 😀!!!</span>
+            </div>
+            <div class="new">
+                <mat-accordion class="example-headers-align">
+                    <form [formGroup]="inboxForm">
+                        <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)" hideToggle>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    <mat-form-field floatLabel= "never" class="form-class">
+                                        <input matInput placeholder="Title" formControlName="title" class="form-control">
+                                      </mat-form-field>
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+
+                            <mat-form-field floatLabel= "never" class="form-class">
+                                <textarea matInput cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="1" placeholder="Take a note...."
+                                formControlName="note" class="form-control"></textarea>
+                            </mat-form-field>
+
+                            <br>
+
+                            <button id="create" mat-button color="primary" (click)="add()">Add</button>
+
+                      </mat-expansion-panel>
+                    </form>
+
+
+                </mat-accordion>
+            </div>
+
+            <div class="pinned" *ngIf="pinned.length">
+                <u>Pinned</u>
+                <br><br>
+                <td *ngFor="let record of pinned;">
+                    <mat-card class="example-headers-align">
+                          <form [formGroup]="inboxForm1">
+                                          <mat-form-field floatLabel= "never" class="form-class">
+                                              <input matInput placeholder="Title" formControlName="title" class="form-control" value={{record.title}}>
+                                            </mat-form-field>
+
+                                  <mat-form-field floatLabel= "never" class="form-class">
+                                      <textarea matInput cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="1" placeholder="Take a note...."
+                                      formControlName="note" class="form-control" value={{record.note}}></textarea>
+                                  </mat-form-field>
+
+                                  <br>
+                                  <button id="update" mat-button color="primary" (click)="updateNote(record)" matTooltip="Update">
+                                    <mat-icon>note_add</mat-icon>
+                                  </button>
+                                  <button id="archive" mat-button color="primary" (click)="archiveNote(record)" matTooltip="Archive">
+                                      <mat-icon>archive</mat-icon>
+                                  </button>
+                                  <button id="more" mat-button color="primary" [matMenuTriggerFor]="afterMenu">
+                                      <mat-icon>more_vert</mat-icon>
+                                  </button>
+                                  <mat-menu #afterMenu="matMenu" xPosition="after">
+                                    <button mat-menu-item (click)="updateNote(record)">Update</button>
+                                    <button mat-menu-item (click)="archiveNote(record)">Archive</button>
+                                    <button mat-menu-item (click)="unpinNote(record)">unpin</button>
+                                    <button mat-menu-item (click)="trashNote(record)">Delete</button>
+                                  </mat-menu>
+                          </form>
+
+
+                      </mat-card>
+                </td>
+              </div>
+
+            <div class="normal">
+              <u>Notes</u>
+              <br><br>
+                <div class="gridView">
+                    <div *ngFor="let record of notes;">
+                        <mat-card class="example-headers-align">
+                              <form [formGroup]="inboxForm1">
+                                <div class="all">
+                                    <mat-form-field floatLabel= "never" class="form-class">
+                                        <input matInput placeholder="Title" formControlName="title" class="form-control" value={{record.title}}>
+                                    </mat-form-field>
+                                    <mat-form-field floatLabel= "never" class="form-class">
+                                        <textarea matInput cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="1" placeholder="Take a note...."
+                                        formControlName="note" class="form-control" value={{record.note}}></textarea>
+                                    </mat-form-field>
+
+                                    <br>
+                                    <button id="update" mat-button color="primary" (click)="updateNote(record)" matTooltip="Update">
+                                      <mat-icon>note_add</mat-icon>
+                                    </button>
+                                    <button id="archive" mat-button color="primary" (click)="archiveNote(record)" matTooltip="Archive">
+                                        <mat-icon>archive</mat-icon>
+                                    </button>
+                                    <button id="color" mat-button color="primary" matTooltip="color">
+                                      <mat-icon>color_lens</mat-icon>
+                                    </button>
+
+                                    <button id="more" mat-button color="primary" [matMenuTriggerFor]="afterMenu">
+                                        <mat-icon>more_vert</mat-icon>
+                                    </button>
+                                    <mat-menu #afterMenu="matMenu" xPosition="after">
+                                      <button mat-menu-item (click)="updateNote(record)">Update</button>
+                                      <button mat-menu-item (click)="archiveNote(record)">Archive</button>
+                                      <button mat-menu-item (click)="pinNote(record)">Pin</button>
+                                      <button mat-menu-item (click)="trashNote(record)">Delete</button>
+                                    </mat-menu>
+                                </div>
+                              </form>
+                          </mat-card>
+
+                        </div>
+                  </div>
+
+
+            </div>
+        </div>
+
+
+
+        <div class="archive" *ngIf="turn==1">
+            <div id="name">
+                <span>Hi {{username}}, Google Keep welcomes you 😀!!!</span>
+            </div>
+            <div class="normal">
+              <u>Archives</u>
+              <br><br>
+                <div class="gridView">
+                    <div *ngFor="let record of archive;">
+                        <mat-card class="example-headers-align">
+                              <form [formGroup]="inboxForm1">
+                                <div class="all">
+                                    <mat-form-field *ngIf="record.title.length!=0" floatLabel= "never" class="form-class">
+                                        <input matInput placeholder="Title" formControlName="title" class="form-control" value={{record.title}}>
+                                    </mat-form-field>
+                                    <mat-form-field floatLabel= "never" class="form-class">
+                                        <textarea matInput cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="1" placeholder="Take a note...."
+                                        formControlName="note" class="form-control" value={{record.note}}></textarea>
+                                    </mat-form-field>
+
+                                    <br>
+                                    <button id="update" mat-button color="primary" (click)="updateNote(record)" matTooltip="Update">
+                                      <mat-icon>note_add</mat-icon>
+                                    </button>
+                                    <button id="archive" mat-button color="primary" (click)="unarchiveNote(record)" matTooltip="Archive">
+                                        <mat-icon>unarchive</mat-icon>
+                                    </button>
+                                    <button id="color" mat-button color="primary" matTooltip="color">
+                                        <mat-icon>color_lens</mat-icon>
+                                      </button>
+                                    <button id="more" mat-button color="primary" [matMenuTriggerFor]="afterMenu">
+                                        <mat-icon>more_vert</mat-icon>
+                                    </button>
+                                    <mat-menu #afterMenu="matMenu" xPosition="after">
+                                        <button mat-menu-item (click)="updateNote(record)">Update</button>
+                                        <button mat-menu-item (click)="unarchiveNote(record)">unarchive</button>
+                                        <button mat-menu-item (click)="pinNote(record)">Pin</button>
+                                        <button mat-menu-item (click)="trashNote(record)">Delete</button>
+                                    </mat-menu>
+                                </div>
+                              </form>
+                          </mat-card>
+
+                        </div>
+                  </div>
+
+
+            </div>
+        </div>
+
+
+
+
+
+        <div class="trash" *ngIf="turn==2">
+            <div id="name">
+                <span>Hi {{username}}, Google Keep welcomes you 😀!!!</span>
+            </div>
+            <div class="normal">
+              <u>Trash</u>
+              <br><br>
+                <div class="gridView">
+                    <div *ngFor="let record of trash;">
+                        <mat-card class="example-headers-align">
+                              <form [formGroup]="inboxForm1">
+                                <div class="all">
+                                    <mat-form-field *ngIf="record.title.length!=0" floatLabel= "never" class="form-class">
+                                        <input matInput placeholder="Title" formControlName="title" class="form-control" value={{record.title}}>
+                                    </mat-form-field>
+                                    <mat-form-field floatLabel= "never" class="form-class">
+                                        <textarea matInput cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="1" placeholder="Take a note...."
+                                        formControlName="note" class="form-control" value={{record.note}}></textarea>
+                                    </mat-form-field>
+
+                                    <br>
+                                    <button id="update" mat-button color="primary" (click)="updateNote(record)" matTooltip="Update">
+                                      <mat-icon>note_add</mat-icon>
+                                    </button>
+                                    <button id="archive" mat-button color="primary" (click)="archiveNote(record)" matTooltip="Archive">
+                                        <mat-icon>archive</mat-icon>
+                                    </button>
+                                    <button id="color" mat-button color="primary" matTooltip="color">
+                                        <mat-icon>color_lens</mat-icon>
+                                      </button>
+                                    <button id="more" mat-button color="primary" [matMenuTriggerFor]="afterMenu">
+                                        <mat-icon>more_vert</mat-icon>
+                                    </button>
+                                    <mat-menu #afterMenu="matMenu" xPosition="after">
+                                        <button mat-menu-item (click)="updateNote(record)">Update</button>
+                                        <button mat-menu-item (click)="archiveNote(record)">Archive</button>
+                                        <button mat-menu-item (click)="pinNote(record)">Pin</button>
+                                        <button mat-menu-item (click)="untrashNote(record)">Restore</button>
+                                        <button mat-menu-item (click)="deleteNote(record)">Delete</button>
+                                    </mat-menu>
+
+
+
+
+                                </div>
+                              </form>
+                          </mat-card>
+
+                        </div>
+                  </div>
+
+
+            </div>
+        </div>
+
+
+
+        <div class="labels" *ngIf="turn==4">
+            <div id="name">
+                <span>Hi {{username}}, Google Keep welcomes you 😀!!!</span>
+            </div>
+            <div class="new">
+                <mat-accordion class="example-headers-align">
+                    <form [formGroup]="inboxForm">
+                        <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)" hideToggle>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    <mat-form-field floatLabel= "never" class="form-class">
+                                        <input matInput placeholder="Title" formControlName="title" class="form-control">
+                                      </mat-form-field>
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+
+                            <mat-form-field floatLabel= "never" class="form-class">
+                                <textarea matInput cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="1" placeholder="Take a note...."
+                                formControlName="note" class="form-control"></textarea>
+                            </mat-form-field>
+
+                            <br>
+
+                            <button id="create" mat-button color="primary" (click)="add()">Add</button>
+
+                      </mat-expansion-panel>
+                    </form>
+
+
+                </mat-accordion>
+            </div>
+
+            <div class="pinned" *ngIf="pinned.length">
+                <u>Pinned</u>
+                <br><br>
+                <td *ngFor="let record of pinned;">
+                    <mat-card class="example-headers-align">
+                          <form [formGroup]="inboxForm1">
+                                          <mat-form-field floatLabel= "never" class="form-class">
+                                              <input matInput placeholder="Title" formControlName="title" class="form-control" value={{record.title}}>
+                                            </mat-form-field>
+
+                                  <mat-form-field floatLabel= "never" class="form-class">
+                                      <textarea matInput cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="1" placeholder="Take a note...."
+                                      formControlName="note" class="form-control" value={{record.note}}></textarea>
+                                  </mat-form-field>
+
+                                  <br>
+                                  <button id="update" mat-button color="primary" (click)="updateNote(record)" matTooltip="Update">
+                                    <mat-icon>note_add</mat-icon>
+                                  </button>
+                                  <button id="archive" mat-button color="primary" (click)="archiveNote(record)" matTooltip="Archive">
+                                      <mat-icon>archive</mat-icon>
+                                  </button>
+                                  <button id="more" mat-button color="primary" [matMenuTriggerFor]="afterMenu">
+                                      <mat-icon>more_vert</mat-icon>
+                                  </button>
+                                  <mat-menu #afterMenu="matMenu" xPosition="after">
+                                    <button mat-menu-item (click)="updateNote(record)">Update</button>
+                                    <button mat-menu-item (click)="archiveNote(record)">Archive</button>
+                                    <button mat-menu-item (click)="unpinNote(record)">unpin</button>
+                                    <button mat-menu-item (click)="trashNote(record)">Delete</button>
+                                  </mat-menu>
+                          </form>
+
+
+                      </mat-card>
+                </td>
+              </div>
+
+            <div class="normal">
+              <u>Notes</u>
+              <br><br>
+                <div class="gridView">
+                    <div *ngFor="let record of notes;">
+                        <mat-card class="example-headers-align">
+                              <form [formGroup]="inboxForm1">
+                                <div class="all">
+                                    <mat-form-field floatLabel= "never" class="form-class">
+                                        <input matInput placeholder="Title" formControlName="title" class="form-control" value={{record.title}}>
+                                    </mat-form-field>
+                                    <mat-form-field floatLabel= "never" class="form-class">
+                                        <textarea matInput cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="1" placeholder="Take a note...."
+                                        formControlName="note" class="form-control" value={{record.note}}></textarea>
+                                    </mat-form-field>
+
+                                    <br>
+                                    <button id="update" mat-button color="primary" (click)="updateNote(record)" matTooltip="Update">
+                                      <mat-icon>note_add</mat-icon>
+                                    </button>
+                                    <button id="archive" mat-button color="primary" (click)="archiveNote(record)" matTooltip="Archive">
+                                        <mat-icon>archive</mat-icon>
+                                    </button>
+                                    <button id="color" mat-button color="primary" matTooltip="color">
+                                      <mat-icon>color_lens</mat-icon>
+                                    </button>
+
+                                    <button id="more" mat-button color="primary" [matMenuTriggerFor]="afterMenu">
+                                        <mat-icon>more_vert</mat-icon>
+                                    </button>
+                                    <mat-menu #afterMenu="matMenu" xPosition="after">
+                                      <button mat-menu-item (click)="updateNote(record)">Update</button>
+                                      <button mat-menu-item (click)="archiveNote(record)">Archive</button>
+                                      <button mat-menu-item (click)="pinNote(record)">Pin</button>
+                                      <button mat-menu-item (click)="trashNote(record)">Delete</button>
+                                    </mat-menu>
+                                </div>
+                              </form>
+                          </mat-card>
+
+                        </div>
+                  </div>
+
+
+            </div>
+        </div>
+
+
+    </div>
+
+</mat-drawer-container>
+
+
+
+
+

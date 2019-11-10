@@ -1,0 +1,38 @@
+.example-card {
+
+  position: relative;
+  width: 40%;
+  display: inline-block;
+}
+
+
+
+
+.example-container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin-left: 15%;
+  margin-top: 5%;
+}
+
+.example-container > * {
+  width: 80%;
+}
+
+.main{
+  position: relative;
+  margin-top: 10%;
+  text-align: center;
+}
+
+
+
+#create{
+
+  font-size: 80%;
+}
+
+#login{
+
+}

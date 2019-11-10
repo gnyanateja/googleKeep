@@ -1,0 +1,22 @@
+<div class="main">
+  <mat-card class="example-card">
+      <h3>Google Keep</h3>
+        <span><u>Create Account</u></span>
+      <div>
+        <form  class="example-container" [formGroup]="otpForm">
+            <mat-form-field>
+                <input matInput placeholder="Enter your email" formControlName="email" class="form-control" required>
+                <mat-error *ngIf="this.otpForm.get('email').invalid">{{getErrorMessage()}}</mat-error>
+              </mat-form-field>
+              <br>
+              <button id="check" mat-raised-button color="primary" (click)="check()">Check Availability and send OTP</button>
+              <br>
+              <button id="create" mat-button color="primary" (click)="signInstead()">Sign in Instead</button>
+
+        </form>
+
+      </div>
+
+  </mat-card>
+</div>
+

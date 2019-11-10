@@ -1,0 +1,31 @@
+<div class="main">
+  <mat-card class="example-card">
+      <h3>Google Keep</h3>
+        <span><u>Sign in</u></span>
+      <div>
+        <form [formGroup]="loginForm" class="example-container">
+            <mat-form-field>
+                <input matInput placeholder="Enter your email" formControlName="email" class="form-control" required>
+                <mat-error *ngIf="loginForm.get('email').invalid">{{getErrorMessage()}}</mat-error>
+              </mat-form-field>
+              <br>
+              <mat-form-field>
+                <input matInput placeholder="Enter your password" formControlName="password" class="form-control" [type]="hide ? 'password' : 'text'" required>
+                <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </button>
+                <mat-error *ngIf="loginForm.get('password').invalid">{{getErrorMessage1()}}</mat-error>
+              </mat-form-field>
+              <div class="buttons">
+                <button id="forgot"  mat-button color="warn" (click)="forgot()">Forgot Password?</button>
+                <br><br>
+                <button id="create" mat-button color="primary" (click)="createAccount()">Create Account</button>
+
+                <button id="login" mat-raised-button color="primary" (click)="login()">Log in</button>
+              </div>
+
+        </form>
+      </div>
+  </mat-card>
+</div>
+
