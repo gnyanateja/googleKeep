@@ -143,7 +143,7 @@ export class InboxComponent implements OnInit {
 
   addwithLabel() {
     if(this.labelInboxForm.get('title').value!='' || this.labelInboxForm.get('note').value!=''){
-      console.log(this.currentLabel);
+
       this.labelInboxForm.get('label').setValue(this.currentLabel);
       this.inboxservice.addNote(this.labelInboxForm.value)
       .subscribe(
@@ -187,7 +187,7 @@ export class InboxComponent implements OnInit {
       .subscribe((data: Note[]) => {
           if (data['code'] === 200) {
             this.pinned = data['notes'];
-            console.log(this.pinned.length);
+
         }
       });
   }
@@ -440,7 +440,7 @@ export class InboxComponent implements OnInit {
     .subscribe((data: Note[]) => {
         if (data['code'] === 200) {
           this.labelNotes = data['notes'];
-          console.log(this.labelNotes);
+
       }
     });
   }
@@ -480,7 +480,7 @@ export class InboxComponent implements OnInit {
       data => {
         if(data['code'] === 200) {
           this.username = data['name'];
-          console.log(this.username);
+
           this.fetchNotes();
           this.fetchPinned();
           this.fetchLabels();
