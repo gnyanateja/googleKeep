@@ -21,8 +21,13 @@
         <hr>
         <span>Labels</span>
         <br>
-        <button mat-button [ngStyle]="{'color': turn==4? 'blue' : 'black'}" (click)="turner(4)" class="button">
-            <mat-icon class="icon">label</mat-icon> </button>
+        <tr *ngFor="let record of labels;">
+            <button  mat-button (click)="labelSelect(record)" class="button">
+                <mat-icon class="icon">label</mat-icon> {{record.label}}</button>
+        </tr>
+
+            <br>
+            <button mat-button (click)="turner(5)" class="button"><u>Edit Label</u></button>
           <hr>
         <button mat-button [ngStyle]="{'color': turn==1? 'blue' : 'black'}" (click)="turner(1)" class="button">
           <mat-icon class="icon">archive</mat-icon> Archive</button>
@@ -32,7 +37,9 @@
 
     </mat-drawer>
 
+
     <div class="example-sidenav-content">
+
 
         <div class="notes" *ngIf="turn==0">
             <div id="name">
@@ -69,39 +76,46 @@
             <div class="pinned" *ngIf="pinned.length">
                 <u>Pinned</u>
                 <br><br>
-                <td *ngFor="let record of pinned;">
-                    <mat-card class="example-headers-align">
-                          <form [formGroup]="inboxForm1">
-                                          <mat-form-field floatLabel= "never" class="form-class">
-                                              <input matInput placeholder="Title" formControlName="title" class="form-control" value={{record.title}}>
-                                            </mat-form-field>
+                <div class="gridView">
+                    <div *ngFor="let record of pinned;">
+                        <mat-card class="example-headers-align">
+                              <form [formGroup]="inboxForm1">
+                                              <mat-form-field floatLabel= "never" class="form-class">
+                                                  <input matInput placeholder="Title" formControlName="title" class="form-control" value={{record.title}}>
+                                                </mat-form-field>
 
-                                  <mat-form-field floatLabel= "never" class="form-class">
-                                      <textarea matInput cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="1" placeholder="Take a note...."
-                                      formControlName="note" class="form-control" value={{record.note}}></textarea>
-                                  </mat-form-field>
+                                      <mat-form-field floatLabel= "never" class="form-class">
+                                          <textarea matInput cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="1" placeholder="Take a note...."
+                                          formControlName="note" class="form-control" value={{record.note}}></textarea>
+                                      </mat-form-field>
 
-                                  <br>
-                                  <button id="update" mat-button color="primary" (click)="updateNote(record)" matTooltip="Update">
-                                    <mat-icon>note_add</mat-icon>
-                                  </button>
-                                  <button id="archive" mat-button color="primary" (click)="archiveNote(record)" matTooltip="Archive">
-                                      <mat-icon>archive</mat-icon>
-                                  </button>
-                                  <button id="more" mat-button color="primary" [matMenuTriggerFor]="afterMenu">
-                                      <mat-icon>more_vert</mat-icon>
-                                  </button>
-                                  <mat-menu #afterMenu="matMenu" xPosition="after">
-                                    <button mat-menu-item (click)="updateNote(record)">Update</button>
-                                    <button mat-menu-item (click)="archiveNote(record)">Archive</button>
-                                    <button mat-menu-item (click)="unpinNote(record)">unpin</button>
-                                    <button mat-menu-item (click)="trashNote(record)">Delete</button>
-                                  </mat-menu>
-                          </form>
+                                      <br>
+
+                                      <button id="update" mat-button color="primary" (click)="updateNote(record)" matTooltip="Update">
+                                        <mat-icon>note_add</mat-icon>
+                                      </button>
+                                      <button id="archive" mat-button color="primary" (click)="archiveNote(record)" matTooltip="Archive">
+                                          <mat-icon>archive</mat-icon>
+                                      </button>
+                                      <button id="color" mat-button color="primary" matTooltip="color">
+                                          <mat-icon>color_lens</mat-icon>
+                                        </button>
+                                      <button id="more" mat-button color="primary" [matMenuTriggerFor]="afterMenu">
+                                          <mat-icon>more_vert</mat-icon>
+                                      </button>
+                                      <mat-menu #afterMenu="matMenu" xPosition="after">
+                                        <button mat-menu-item (click)="updateNote(record)">Update</button>
+                                        <button mat-menu-item (click)="archiveNote(record)">Archive</button>
+                                        <button mat-menu-item (click)="unpinNote(record)">unpin</button>
+                                        <button mat-menu-item (click)="trashNote(record)">Delete</button>
+                                      </mat-menu>
+                              </form>
 
 
-                      </mat-card>
-                </td>
+                          </mat-card>
+                    </div>
+                </div>
+
               </div>
 
             <div class="normal">
@@ -165,7 +179,7 @@
                         <mat-card class="example-headers-align">
                               <form [formGroup]="inboxForm1">
                                 <div class="all">
-                                    <mat-form-field *ngIf="record.title.length!=0" floatLabel= "never" class="form-class">
+                                    <mat-form-field floatLabel= "never" class="form-class">
                                         <input matInput placeholder="Title" formControlName="title" class="form-control" value={{record.title}}>
                                     </mat-form-field>
                                     <mat-form-field floatLabel= "never" class="form-class">
@@ -219,7 +233,7 @@
                         <mat-card class="example-headers-align">
                               <form [formGroup]="inboxForm1">
                                 <div class="all">
-                                    <mat-form-field *ngIf="record.title.length!=0" floatLabel= "never" class="form-class">
+                                    <mat-form-field floatLabel= "never" class="form-class">
                                         <input matInput placeholder="Title" formControlName="title" class="form-control" value={{record.title}}>
                                     </mat-form-field>
                                     <mat-form-field floatLabel= "never" class="form-class">
@@ -266,11 +280,11 @@
 
         <div class="labels" *ngIf="turn==4">
             <div id="name">
-                <span>Hi {{username}}, Google Keep welcomes you 😀!!!</span>
+                <span>Hi {{username}}, Google Keep welcomes you 😀!!! Label - {{currentLabel}}</span>
             </div>
             <div class="new">
                 <mat-accordion class="example-headers-align">
-                    <form [formGroup]="inboxForm">
+                    <form [formGroup]="labelInboxForm">
                         <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)" hideToggle>
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
@@ -287,7 +301,7 @@
 
                             <br>
 
-                            <button id="create" mat-button color="primary" (click)="add()">Add</button>
+                            <button id="create" mat-button color="primary" (click)="addwithLabel()">Add</button>
 
                       </mat-expansion-panel>
                     </form>
@@ -296,49 +310,12 @@
                 </mat-accordion>
             </div>
 
-            <div class="pinned" *ngIf="pinned.length">
-                <u>Pinned</u>
-                <br><br>
-                <td *ngFor="let record of pinned;">
-                    <mat-card class="example-headers-align">
-                          <form [formGroup]="inboxForm1">
-                                          <mat-form-field floatLabel= "never" class="form-class">
-                                              <input matInput placeholder="Title" formControlName="title" class="form-control" value={{record.title}}>
-                                            </mat-form-field>
-
-                                  <mat-form-field floatLabel= "never" class="form-class">
-                                      <textarea matInput cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="1" placeholder="Take a note...."
-                                      formControlName="note" class="form-control" value={{record.note}}></textarea>
-                                  </mat-form-field>
-
-                                  <br>
-                                  <button id="update" mat-button color="primary" (click)="updateNote(record)" matTooltip="Update">
-                                    <mat-icon>note_add</mat-icon>
-                                  </button>
-                                  <button id="archive" mat-button color="primary" (click)="archiveNote(record)" matTooltip="Archive">
-                                      <mat-icon>archive</mat-icon>
-                                  </button>
-                                  <button id="more" mat-button color="primary" [matMenuTriggerFor]="afterMenu">
-                                      <mat-icon>more_vert</mat-icon>
-                                  </button>
-                                  <mat-menu #afterMenu="matMenu" xPosition="after">
-                                    <button mat-menu-item (click)="updateNote(record)">Update</button>
-                                    <button mat-menu-item (click)="archiveNote(record)">Archive</button>
-                                    <button mat-menu-item (click)="unpinNote(record)">unpin</button>
-                                    <button mat-menu-item (click)="trashNote(record)">Delete</button>
-                                  </mat-menu>
-                          </form>
-
-
-                      </mat-card>
-                </td>
-              </div>
 
             <div class="normal">
               <u>Notes</u>
               <br><br>
                 <div class="gridView">
-                    <div *ngFor="let record of notes;">
+                    <div *ngFor="let record of labelNotes;">
                         <mat-card class="example-headers-align">
                               <form [formGroup]="inboxForm1">
                                 <div class="all">
@@ -379,6 +356,61 @@
 
 
             </div>
+        </div>
+
+
+        <div class="editlabels" *ngIf="turn==5">
+            <div id="name">
+                <span>Hi {{username}}, Google Keep welcomes you 😀!!!</span>
+            </div>
+            <mat-tab-group mat-align-tabs="center" animationDuration="0ms">
+                <mat-tab label="Add Label">
+                    <mat-card class="label">
+                        <form [formGroup]="labelForm">
+                          <div class="all">
+                              <mat-form-field  class="labelinput">
+                                  <input matInput placeholder="Enter label name" formControlName="label" class="form-control">
+                              </mat-form-field>
+                              <br>
+                              <button mat-button color="primary" (click)="addLabel()" matTooltip="Add Label">
+                                Add Label
+                              </button>
+
+                          </div>
+                        </form>
+                    </mat-card>
+                </mat-tab>
+                <mat-tab label="Update Label">
+                    <div class="normal">
+                        <u>Labels</u>
+                        <br><br>
+                          <div class="gridView">
+                              <div *ngFor="let record of labels;">
+                                  <mat-card class="example-headers-align">
+                                        <form [formGroup]="labelForm1">
+                                          <div class="all">
+                                              <mat-form-field floatLabel= "never" class="form-class">
+                                                  <input matInput placeholder="Enter your label name" formControlName="label" class="form-control" value={{record.label}}>
+                                              </mat-form-field>
+                                              <br>
+                                              <button mat-button color="primary" (click)="updateLabel(record)" matTooltip="Update">
+                                                <mat-icon>note_add</mat-icon>
+                                              </button>
+                                              <button  mat-button color="primary" (click)="deleteLabel(record)" matTooltip="delete">
+                                                  <mat-icon>restore_from_trash</mat-icon>
+                                              </button>
+
+                                          </div>
+                                        </form>
+                                    </mat-card>
+
+                                  </div>
+                            </div>
+
+
+                      </div>
+                </mat-tab>
+              </mat-tab-group>
         </div>
 
 

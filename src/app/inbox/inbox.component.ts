@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 import { Router } from '@angular/router';
 
@@ -8,6 +8,7 @@ import { UserService } from '../user.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {InboxService} from '../inbox.service';
 import {Note} from '../note.model';
+import {Label} from '../label.model';
 
 
 @Component({
@@ -22,16 +23,22 @@ export class InboxComponent implements OnInit {
   pinned: Note[];
   archive: Note[];
   trash: Note[];
+  labelNotes: Note[];
+  labels: Label[];
   inboxForm: FormGroup;
   inboxForm1: FormGroup;
+  labelForm: FormGroup;
+  labelForm1: FormGroup;
+  labelInboxForm: FormGroup;
 
   turn = 0;
-
-  constructor(private snackBar: MatSnackBar, private userservice: UserService, private inboxservice: InboxService, private router: Router) {
+  currentLabel="";
+  constructor(private snackBar: MatSnackBar, private userservice: UserService,private inboxservice: InboxService, private router: Router) {
     this.setStep(-1);
     this.pinned = [];
     this.archive = [];
     this.trash = [];
+
 
     this.inboxForm = new FormGroup ({
       token : new FormControl('', []),
@@ -45,12 +52,32 @@ export class InboxComponent implements OnInit {
       note : new FormControl('', [])
     });
 
+    this.labelForm = new FormGroup ({
+      token : new FormControl('', []),
+      label : new FormControl('', [Validators.required])
+    });
+
+    this.labelForm1 = new FormGroup ({
+      token : new FormControl('', []),
+      label : new FormControl('', [Validators.required])
+    });
+
+    this.labelInboxForm = new FormGroup ({
+      token : new FormControl('', []),
+      title : new FormControl('', []),
+      note : new FormControl('', []),
+      label : new FormControl('',[])
+    });
+
     let x = localStorage.getItem('token');
     if( x != null) {
       x = x.slice(1, x.length-1);
     }
     this.inboxForm.get('token').setValue(x);
     this.inboxForm1.get('token').setValue(x);
+    this.labelForm.get('token').setValue(x);
+    this.labelForm1.get('token').setValue(x);
+    this.labelInboxForm.get('token').setValue(x);
     this.isloggedin();
   }
 
@@ -78,7 +105,11 @@ export class InboxComponent implements OnInit {
   }
 
 
-
+  labelSelect(sam) {
+    this.currentLabel = sam.label;
+    this.fetchLabelNotes(sam);
+    this.turn=4;
+  }
 
 
 
@@ -97,6 +128,35 @@ export class InboxComponent implements OnInit {
             this.inboxForm.get('note').setValue('');
             this.fetchPinned();
             this.fetchNotes();
+
+          }
+        },
+        error => { }
+      );
+    }
+    else {
+      this.snackBar.open('Both fields are empty', '', {
+        duration: 5000
+      });
+    }
+  }
+
+  addwithLabel() {
+    if(this.labelInboxForm.get('title').value!='' || this.labelInboxForm.get('note').value!=''){
+      console.log(this.currentLabel);
+      this.labelInboxForm.get('label').setValue(this.currentLabel);
+      this.inboxservice.addNote(this.labelInboxForm.value)
+      .subscribe(
+        data => {
+          if (data['code'] === 200) {
+            // alert('Email not registered');
+            this.snackBar.open('Added note', '', {
+              duration: 5000
+            });
+            this.labelInboxForm.get('title').setValue('');
+            this.labelInboxForm.get('note').setValue('');
+
+            this.fetchLabelNotes(this.labelInboxForm.value);
 
           }
         },
@@ -340,9 +400,79 @@ export class InboxComponent implements OnInit {
 
 
 
+  addLabel() {
+    if(this.labelForm.get('label').value!=''){
+      this.inboxservice.addLabel(this.labelForm.value)
+      .subscribe(
+        data => {
+          if (data['code'] === 200) {
+            // alert('Email not registered');
+            this.snackBar.open('Added Label', '', {
+              duration: 5000
+            });
+            this.labelForm.get('label').setValue('');
+            this.fetchLabels();
+          }
+        },
+        error => { }
+      );
+  }
+  else{
+    this.snackBar.open('Please enter the label name', '', {
+      duration: 5000
+    });
+  }
+}
 
 
+  fetchLabels() {
+    this.inboxservice.getLabels(this.labelForm.value)
+    .subscribe((data: Label[]) => {
+        if (data['code'] === 200) {
+          this.labels = data['notes'];
+      }
+    });
+  }
 
+  fetchLabelNotes(sam) {
+    sam.token=this.inboxForm.get('token').value;
+    this.inboxservice.getLabelNotes(sam)
+    .subscribe((data: Note[]) => {
+        if (data['code'] === 200) {
+          this.labelNotes = data['notes'];
+          console.log(this.labelNotes);
+      }
+    });
+  }
+
+  updateLabel(sam) {
+    sam.token = this.labelForm1.get('token').value;
+    let l = this.labelForm1.get('label').value;
+    if(l.length !== 0) {
+      sam.label = l;
+    }
+    this.inboxservice.updateLabel(sam)
+    .subscribe((data: Label[]) => {
+        if (data['code'] === 200) {
+          this.fetchLabels();
+      }
+    });
+  }
+
+
+  deleteLabel(sam) {
+    sam.token = this.labelForm1.get('token').value;
+    let l = this.labelForm1.get('label').value;
+    if(l.length !== 0) {
+      sam.label = l;
+    }
+    this.inboxservice.deleteLabel(sam)
+    .subscribe((data: Label[]) => {
+        if (data['code'] === 200) {
+          this.fetchLabels();
+      }
+    });
+  }
 
   isloggedin() {
     this.userservice.getUsername()
@@ -353,6 +483,7 @@ export class InboxComponent implements OnInit {
           console.log(this.username);
           this.fetchNotes();
           this.fetchPinned();
+          this.fetchLabels();
         }
         else {
           this.router.navigateByUrl('/login');

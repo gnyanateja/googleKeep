@@ -111,6 +111,13 @@ export class InboxService {
     });
   }
 
+
+  getLabelNotes(body: any) {
+    return this.http.post(url + '/getLabelNotes', body, {
+      observe: 'body'
+    });
+  }
+
   updateLabel(body: any) {
     return this.http.post(url + '/updateLabel', body, {
       observe: 'body'

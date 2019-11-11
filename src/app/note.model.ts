@@ -4,4 +4,5 @@ export interface Note {
   email: String;
   title: String;
   note: String;
+  label: String;
   }
